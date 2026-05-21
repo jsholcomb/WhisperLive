@@ -14,21 +14,24 @@ jobs:
         with:
           xcode-version: 'latest'
 
-      - name: Build Xcode Project
+      - name: Build and Package App
         run: |
+          # 1. Drop directly into the project folder
+          cd Audio-Transcription-iOS
+          
+          # 2. Compile the target without signing dependencies
           xcodebuild build \
-            -project Audio-Transcription-iOS/Audio-Transcription-iOS.xcodeproj \
+            -project Audio-Transcription-iOS.xcodeproj \
             -scheme Audio-Transcription-iOS \
             -destination 'generic/platform=iOS' \
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
 
-      - name: Package into IPA Structure
-        run: |
+          # 3. Create the standard IPA structural envelope
           mkdir -p Payload
           cp -r ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release-iphoneos/Audio-Transcription-iOS.app Payload/
-          zip -r WhisperLive.ipa Payload
+          zip -r ../WhisperLive.ipa Payload
 
       - name: Upload Finished IPA
         uses: actions/upload-artifact@v4
