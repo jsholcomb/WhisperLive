@@ -1,0 +1,40 @@
+name: Build iOS IPA
+on:
+  workflow_dispatch: # Allows you to manually click a button to run this script
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest'
+
+      - name: Build Xcode Project
+        run: |
+          cd Audio-Transcription-iOS
+          xcodebuild build \
+            -project Audio-Transcription-iOS.xcodeproj \
+            -scheme Audio-Transcription-iOS \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package into IPA Structure
+        run: |
+          cd Audio-Transcription-iOS
+          mkdir -p Payload
+          # Locate the freshly built binary inside standard Xcode build pathways
+          cp -r ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release-iphoneos/Audio-Transcription-iOS.app Payload/
+          zip -r WhisperLive.ipa Payload
+
+      - name: Upload Finished IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhisperLive-Unsigned-IPA
+          path: Audio-Transcription-iOS/WhisperLive.ipa
