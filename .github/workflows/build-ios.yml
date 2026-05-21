@@ -1,6 +1,6 @@
 name: Build iOS IPA
 on:
-  workflow_dispatch: # Allows you to manually click a button to run this script
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,9 +16,8 @@ jobs:
 
       - name: Build Xcode Project
         run: |
-          cd Audio-Transcription-iOS
           xcodebuild build \
-            -project Audio-Transcription-iOS.xcodeproj \
+            -project Audio-Transcription-iOS/Audio-Transcription-iOS.xcodeproj \
             -scheme Audio-Transcription-iOS \
             -destination 'generic/platform=iOS' \
             -configuration Release \
@@ -27,9 +26,8 @@ jobs:
 
       - name: Package into IPA Structure
         run: |
-          cd Audio-Transcription-iOS
           mkdir -p Payload
-          # Locate the freshly built binary inside standard Xcode build pathways
+          # Copy the compiled .app directory into the Payload folder
           cp -r ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release-iphoneos/Audio-Transcription-iOS.app Payload/
           zip -r WhisperLive.ipa Payload
 
@@ -37,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: WhisperLive-Unsigned-IPA
-          path: Audio-Transcription-iOS/WhisperLive.ipa
+          path: WhisperLive.ipa
