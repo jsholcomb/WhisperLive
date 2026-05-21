@@ -27,7 +27,6 @@ jobs:
       - name: Package into IPA Structure
         run: |
           mkdir -p Payload
-          # Copy the compiled .app directory into the Payload folder
           cp -r ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release-iphoneos/Audio-Transcription-iOS.app Payload/
           zip -r WhisperLive.ipa Payload
 
